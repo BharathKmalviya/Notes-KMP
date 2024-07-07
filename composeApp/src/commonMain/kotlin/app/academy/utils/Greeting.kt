@@ -5,8 +5,8 @@ import app.academy.utils.getPlatform
 class Greeting {
     private val platform = getPlatform()
 
-    fun greet(): String {
-        return "Hello, ${platform.name}!"
+    fun greet(text:String): String {
+        return "$text, ${platform.name}!"
     }
 
     fun hello(): String {
