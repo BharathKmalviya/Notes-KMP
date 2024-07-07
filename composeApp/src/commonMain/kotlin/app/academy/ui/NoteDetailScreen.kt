@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,9 +33,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import app.academy.di.AppModule
 import app.academy.domain.NoteDetailViewModel
 import cafe.adriel.voyager.core.model.rememberNavigatorScreenModel
+import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import co.touchlab.kermit.Logger
 
 class NoteDetailScreen(private val appModule: AppModule, private val noteId: String? = null) :
     Screen {
@@ -42,14 +45,21 @@ class NoteDetailScreen(private val appModule: AppModule, private val noteId: Str
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val coroutineScope = rememberCoroutineScope()
-        val viewModel: NoteDetailViewModel =
-            navigator.rememberNavigatorScreenModel {
+        val canPop = navigator.canPop
+        val viewModel: NoteDetailViewModel = navigator.rememberNavigatorScreenModel {
                 NoteDetailViewModel(
                     currentNoteId = noteId,
                     notesRepository = appModule.provideNotesRepository(),
                     coroutineScope = coroutineScope
                 )
             }
+
+        DisposableEffect(Unit){
+            Logger.d("ComposeLife") { "Note Detail is running ${viewModel.hashCode()} $canPop"}
+            onDispose {
+                Logger.d("ComposeLife") { "Note Detail is disposed ${viewModel.hashCode()} $canPop"}
+            }
+        }
         val noteTitle by viewModel.titleTextStream.collectAsState()
         val noteContent by viewModel.contentTextStream.collectAsState()
         NoteDetailScreenContent(
@@ -58,7 +68,6 @@ class NoteDetailScreen(private val appModule: AppModule, private val noteId: Str
             onNoteTitleChange = viewModel::onTitleChange,
             onNoteContentChange = viewModel::onContentChange,
             onBackButtonClick = {
-                viewModel.clear()
                 navigator.pop()
             }
         )

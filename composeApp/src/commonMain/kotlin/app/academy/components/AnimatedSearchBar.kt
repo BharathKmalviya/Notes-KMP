@@ -22,8 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.academy.model.Note
+import app.academy.ui.NoteDetailScreen
 import app.academy.utils.getWindowSize
 
+/**
+ * Stateless searchBar
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @Composable
@@ -37,6 +41,7 @@ fun AnimatedSearchBar(
     onNoteDismissed: (Note) -> Unit,
     onNoteItemClick: (Note) -> Unit,
     modifier: Modifier = Modifier,
+    searchResults: List<Note>,
     suggestionsForQuery: List<Note>
 ) {
     val leadingIcon = @Composable {
@@ -82,16 +87,27 @@ fun AnimatedSearchBar(
             trailingIcon = trailingIcon,
             placeholder = { Text(text = "Search notes") },
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 8.dp)
-            ) {
-                NoteItems(
-                    notes = suggestionsForQuery,
-                    onClick = onNoteItemClick,
-                    onDismissed = onNoteDismissed
-                )
+            if (suggestionsForQuery.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp)
+                ) {
+                    NoteItems(
+                        notes = suggestionsForQuery,
+                        onClick = onNoteItemClick,
+                        onDismissed = onNoteDismissed
+                    )
+                }
+            }
+            else {
+                LazyColumn {
+                    NoteItems(searchResults, onClick = {
+
+                    }) {
+                        //onDismissed
+                    }
+                }
             }
         }
     }

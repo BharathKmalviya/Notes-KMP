@@ -1,5 +1,6 @@
 package app.academy.data.local.datasource
 
+import app.academy.model.Note
 import app.academy.notes.database.SavedNoteEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -37,5 +38,10 @@ interface LocalNotesDataSource {
      * Used to delete all saved notes marked as deleted.
      */
     suspend fun deleteAllNotesMarkedAsDeleted()
+
+    /**
+     * Search notes
+     */
+    fun searchNotes(query: String): List<SavedNoteEntity>
 }
 

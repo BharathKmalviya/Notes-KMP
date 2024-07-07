@@ -1,5 +1,6 @@
 package app.academy.data.local.datasource
 
+import app.academy.model.Note
 import app.academy.notes.database.SavedNoteEntity
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -43,5 +44,13 @@ class DefaultLocalNotesDataSource(
 
     override suspend fun deleteAllNotesMarkedAsDeleted() = withContext(ioDispatcher) {
         queries.deleteAllNotesMarkedAsDeleted()
+    }
+
+    override fun searchNotes(query: String): List<SavedNoteEntity> {
+       return queries.getAllSavedNotes()
+            .executeAsList()
+            .filter { result ->
+                result.title == query || result.content == query
+            }
     }
 }

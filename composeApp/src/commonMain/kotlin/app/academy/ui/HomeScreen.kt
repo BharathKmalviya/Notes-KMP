@@ -73,9 +73,13 @@ class HomeScreen(private val appModule: AppModule) : Screen {
                         isSearchBarActive = isSearchBarActive,
                         onQueryChange = {
                             currentSearchQuery = it
-                            // TODO call search
+                            viewModel.search(currentSearchQuery)
                         },
-                        onBackButtonClick = { isSearchBarActive = false },
+                        onBackButtonClick = {
+                            currentSearchQuery = ""
+                            viewModel.search(currentSearchQuery)
+                            isSearchBarActive = false
+                        },
                         onActiveChange = { isSearchBarActive = it },
                         onClearSearchQueryButtonClick = {
                             currentSearchQuery = ""
@@ -85,16 +89,16 @@ class HomeScreen(private val appModule: AppModule) : Screen {
                         onNoteDismissed = {
                             //TODO note dismiss
                         },
-                        onNoteItemClick = {
-                            //TODO on note click
+                        searchResults = uiState.searchResults,
+                        onNoteItemClick = { note ->
+                            navigator.push(NoteDetailScreen(appModule, note.id))
                         }
                     )
                 }
-                item {
-                    Text("Currently its buggy - assignment #1 , ensure app functions and updates on new note")
-                }
 
-                NoteItems(uiState.savedNotes, onClick = {}) {
+                NoteItems(uiState.savedNotes, onClick = {
+                    navigator.push(NoteDetailScreen(appModule, it.id))
+                }) {
                     //onDismissed
                 }
             }

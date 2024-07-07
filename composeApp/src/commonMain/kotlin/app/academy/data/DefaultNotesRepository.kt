@@ -15,7 +15,6 @@ class DefaultNotesRepository(
 
     override val savedNotesStream: Flow<List<Note>> =
         localNotesDataSource.savedNotesStream.map { savedNoteEntities ->
-            Logger.d("NotesCRUD") {"savednotes are ::$savedNoteEntities"}
             savedNoteEntities.map { savedNoteEntity: SavedNoteEntity -> savedNoteEntity.toNote() }
         }
 
@@ -29,5 +28,12 @@ class DefaultNotesRepository(
 
     override suspend fun deleteAllNotesMarkedAsDeleted() {
         localNotesDataSource.deleteAllNotesMarkedAsDeleted()
+    }
+
+    override fun searchNotes(query: String): List<Note> {
+       return localNotesDataSource.searchNotes(query)
+           .map { savedNoteEntity ->
+               savedNoteEntity.toNote()
+           }
     }
 }

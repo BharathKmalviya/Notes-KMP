@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -40,6 +41,7 @@ class NoteDetailViewModel(
 
 
     init {
+        Logger.d("NotesDetails"){"currentNoteId: $currentNoteId"}
         viewModelScope.launch {
             currentNote = getOrCreateNoteWithId(currentNoteId ?: UUID.randomUUIDString())
             _titleText.update { currentNote.title }
@@ -49,6 +51,7 @@ class NoteDetailViewModel(
                 _titleText.debounce(timeoutMillis = debounceTimeout).distinctUntilChanged(),
                 _contentText.debounce(timeoutMillis = debounceTimeout).distinctUntilChanged()
             ) { updatedTitleText, updatedContentText ->
+                Logger.d("NotesDetails"){"CurrentNoteIn NDVM: $currentNote"}
                 // remove note from database, if note is blank
                 if (updatedTitleText.isBlank() && updatedContentText.isBlank()) {
                     notesRepository.deleteNote(currentNote)
@@ -58,7 +61,7 @@ class NoteDetailViewModel(
                     title = updatedTitleText,
                     content = updatedContentText
                 )
-                Logger.d("NotesCRUD") { "Saving Note $updatedNote" }
+                Logger.d("NotesDetails") { "Saving Note $updatedNote" }
                 notesRepository.saveNote(updatedNote)
             }.launchIn(this)
         }
@@ -72,14 +75,11 @@ class NoteDetailViewModel(
         _contentText.update { newContent }
     }
 
-    fun clear() {
-        _titleText.update { "" }
-        _contentText.update { "" }
-    }
-
     private suspend fun getOrCreateNoteWithId(id: String): Note {
         val savedNotes = notesRepository.savedNotesStream.first()
+        Logger.d("NotesDetails"){"Fetched notes in getOrCreateNoteWithId::$savedNotes"}
         val matchingNote = savedNotes.firstOrNull { it.id == id }
+        Logger.d("NotesDetails"){"matchingNote::$matchingNote"}
         if (matchingNote != null) return matchingNote
         return Note(
             id = id,
@@ -87,7 +87,9 @@ class NoteDetailViewModel(
             content = "",
             createdAtTimestampMillis = Clock.System.now().toEpochMilliseconds(),
             isDeleted = false
-        )
+        ).also {
+            Logger.d("NotesDetails"){"Saving or creating new note: $it"}
+        }
     }
 
 }

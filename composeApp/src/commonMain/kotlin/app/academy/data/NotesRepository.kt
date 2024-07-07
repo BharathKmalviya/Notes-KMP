@@ -1,6 +1,7 @@
 package app.academy.data
 
 import app.academy.model.Note
+import app.academy.notes.database.SavedNoteEntity
 import kotlinx.coroutines.flow.Flow
 
 interface NotesRepository {
@@ -25,4 +26,8 @@ interface NotesRepository {
      */
     suspend fun deleteAllNotesMarkedAsDeleted()
 
+    /**
+     * Search notes
+     */
+    fun searchNotes(query: String): List<Note>
 }
