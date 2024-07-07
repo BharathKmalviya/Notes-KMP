@@ -1,13 +1,11 @@
-/*
-package app.architect.notes.data.local
+package app.academy.data.local
 
 import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.example.notes.database.NotesDatabase
+import com.app.academy.notes.database.NotesDatabase
 
 actual class NotesDatabaseDriverFactory(private val context: Context) {
-
     actual fun createDriver(): SqlDriver = AndroidSqliteDriver(
         schema = NotesDatabase.Schema,
         context = context,
@@ -15,4 +13,3 @@ actual class NotesDatabaseDriverFactory(private val context: Context) {
     )
 
 }
-*/

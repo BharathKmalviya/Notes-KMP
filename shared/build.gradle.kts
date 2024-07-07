@@ -80,10 +80,3 @@ android {
     }
 }
 
-sqldelight {
-    databases {
-        create("NotesDatabase") {
-            packageName.set("com.example.notes.database")
-        }
-    }
-}

@@ -1,4 +1,4 @@
-package app.architect.notes.utils
+package app.academy.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.DisposableHandle
